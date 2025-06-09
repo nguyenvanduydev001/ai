@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gemini Chatbot</title>
+    <style>
+      /* Reset và font */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #fff; /* nền trắng như ChatGPT */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-container {
+        width: 600px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: 15px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+        background-color: #fff;
+        overflow: hidden;
+        border: 1px solid #ddd;
+      }
+
+      .chat-header {
+        padding: 20px;
+        font-size: 24px;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        color: #444;
+      }
+
+      .chat-box {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #fafafa;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 14px 18px;
+        border-radius: 15px;
+        line-height: 1.5;
+        white-space: pre-line;
+        font-size: 16px;
+      }
+
+      .user-message {
+        align-self: flex-end;
+        background-color: #e0f2fe; /* xanh nhạt */
+        color: #0c4a6e;
+        border-bottom-right-radius: 4px;
+      }
+
+      .bot-message {
+        align-self: flex-start;
+        background-color: #f3f4f6; /* xám nhạt */
+        color: #111827;
+        border-bottom-left-radius: 4px;
+      }
+
+      .chat-input {
+        padding: 16px 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 12px;
+        background: #fff;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 14px 20px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 9999px; /* bo tròn đầy đủ */
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .chat-input input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+      }
+
+      .chat-input button {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 9999px;
+        padding: 0 20px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .chat-input button:hover {
+        background-color: #2563eb;
+      }
+
+      /* Scrollbar cho chat-box đẹp hơn */
+      .chat-box::-webkit-scrollbar {
+        width: 8px;
+      }
+      .chat-box::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">💬 Gemini Chatbot</div>
+      <div class="chat-box" id="chatBox">
+        <!-- Messages sẽ hiện ở đây -->
+      </div>
+      <div class="chat-input">
+        <input
+          type="text"
+          id="userInput"
+          placeholder="Hỏi bất kỳ điều gì..."
+          onkeydown="if(event.key==='Enter'){sendMessage()}"
+          autocomplete="off"
+        />
+        <button onclick="sendMessage()">Gửi</button>
+      </div>
+    </div>
+
+    <script>
+      async function sendMessage() {
+        const userInput = document.getElementById("userInput");
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        const chatBox = document.getElementById("chatBox");
+
+        // Thêm tin nhắn người dùng
+        const userMsg = document.createElement("div");
+        userMsg.className = "message user-message";
+        userMsg.innerText = message;
+        chatBox.appendChild(userMsg);
+
+        // Xóa input
+        userInput.value = "";
+
+        // Scroll xuống cuối
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+          const response = await fetch(
+            `/get-response/?message=${encodeURIComponent(message)}`
+          );
+          const data = await response.json();
+
+          // Thêm câu trả lời bot
+          const botMsg = document.createElement("div");
+          botMsg.className = "message bot-message";
+          botMsg.innerText = data.response;
+          chatBox.appendChild(botMsg);
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) {
+          const errorMsg = document.createElement("div");
+          errorMsg.className = "message bot-message";
+          errorMsg.innerText = "❌ Lỗi phản hồi từ server.";
+          chatBox.appendChild(errorMsg);
+        }
+      }
+    </script>
+  </body>
+</html>

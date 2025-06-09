@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cấu hình môi trường ảo
+venv/
+.env
+
+# Thư mục và file của hệ thống
+.DS_Store
+Thumbs.db
+
+# Các file logs và temp
+*.log
+*.tmp
+
+# Thư mục models nếu bạn không muốn push các model lớn lên repo
+models/
+
+# File upload tạm
+uploaded_image.jpg
+demo_image.png
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
